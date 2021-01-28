@@ -38,14 +38,16 @@ class TwitterStreamListener(StreamListener):
             print("Completed:")
 
         else:
-            self.count += 1
-            if self.count != self.max_count:
-                try:
-                    twitter_data_dict = json.loads(raw_data)
-                    twitter_data_text = twitter_data_dict["text"]
+            try:
 
-                    if twitter_data_text is None:
-                        return True  # continue with next data stream
+                twitter_data_dict = json.loads(raw_data)
+                twitter_data_text = twitter_data_dict["text"]
+                self.count += 1
+
+                if twitter_data_text is None:
+                    return True  # continue with next data stream
+
+                if self.count != self.max_count:
 
                     # todo- BS4 to get the content
                     tweet_urls = []
@@ -57,17 +59,17 @@ class TwitterStreamListener(StreamListener):
                     sentiment_tweet = sentiment_analyser(clean_tweets)
 
                     if clean_tweets is None:
-                        return True  # no tweets means-> continue next
+                        return True  # no tweets means-> continue next??
 
                     tweets.append(clean_tweets)
                     sentiment.append(sentiment_tweet)
 
-                except KeyError:
-                    return True  # continue if there is no text
+                else:
+                    print(self.count, ": tweets reached", "expected maximum tweets:", self.max_count)
+                    return False  # disconnect stream ?
 
-            else:
-                print(self.max_count, ": tweets reached")
-                return False  # disconnect stream ?
+            except KeyError:
+                return True  # continue if there is no text
 
     # on failure
     def on_error(self, status_code):
