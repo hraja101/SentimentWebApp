@@ -3,15 +3,14 @@ import re
 import sys
 import time
 from random import randrange
-
+from nltk.corpus import stopwords
 from nltk.sentiment import SentimentIntensityAnalyzer
 import nltk
 from textblob import TextBlob
-from tweepy import API, Stream, OAuthHandler
 from tweepy.streaming import StreamListener
-import src.TwitterApiConfig as Config
 
 nltk.download('vader_lexicon')
+nltk.download('stopwords')
 
 IS_PY3 = sys.version_info >= (3, 0)
 
@@ -83,9 +82,31 @@ class TwitterStreamListener(StreamListener):
 
 
 def clean_text(text):
+    """
+        Parameters
+        ----------
+        text : tweet
+
+        Returns
+        -------
+        preprocessed tweet
+        :param text:
+    """
     # clean up text
-    return ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t]) \
-                                    |(\w+:\/\/\S+)", " ", text).split())
+    stopwords_replace = set(stopwords.words('english'))
+    text = text.lower()
+    # preprocessing
+    foo = text.startswith('RT')
+
+    preprocess_tw = re.sub(r'[^\w\s]', '', text)  # remove all punctuations
+    preprocess_tw = re.sub(r'\s+', ' ',
+                           preprocess_tw).strip()  # remove new lines, more than two spaces with the single space
+    preprocess_tw = re.sub(r'[0-9,\n]', r'', preprocess_tw)  # remove numbers
+    preprocess_tw = ' '.join(word for word in preprocess_tw.split() if word not in stopwords_replace)
+    return preprocess_tw
+
+    # return ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t]) \
+    #                                 |(\w+:\/\/\S+)", " ", text).split())
 
 
 def de_emoji(text):
@@ -109,21 +130,3 @@ def sentiment_analyser(text):
         sentiment_tweet = "neutral"
 
     return sentiment_tweet
-
-
-if __name__ == '__main__':
-    # set keys and token
-    auth = OAuthHandler(Config.CONSUMER_API_KEY, Config.CONSUMER_API_SECRET)
-    auth.set_access_token(Config.CONSUMER_ACCESS_TOKEN, Config.CONSUMER_ACCESS_TOKEN_SECRET)
-    api = API(auth)
-
-    # create an instance of the twitter stream listener
-    tweetListener = TwitterStreamListener()
-
-    # stream instance
-    tweepyStream: Stream = Stream(auth=auth, listener=tweetListener, )
-
-    tweepyStream.filter(languages=["en"], track="microsoft")
-
-    tweets_dataframe = {"tweets": tweets, "sentiment": sentiment}
-    print(tweets_dataframe)
