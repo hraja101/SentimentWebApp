@@ -28,7 +28,7 @@ class TwitterStreamListener(StreamListener):
 
     def __init__(self):
         self.count = 0
-        self.max_count = 500
+        self.max_count = 500  # max 500 tweets
 
     def on_data(self, raw_data):
         try:
