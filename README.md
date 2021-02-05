@@ -31,7 +31,7 @@ Run the python file to start the webapp
 </pre>
 
 <h3>Web App Interface:</h3>
-![img_1.png](img_1.png)
+![img_3.png](img_3.png)
 
 Enter the search query to scrape the twitter and collect the data , 
 for example : "covid" and enter your text -> to check the sentiment of your text.
