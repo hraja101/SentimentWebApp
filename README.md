@@ -30,7 +30,7 @@ Run the python file to start the webapp
 <pre>(base) <font color="#4E9A06"><b>harish@hari</b></font>:<font color="#3465A4"><b>~/Downloads/SentimentWebApp/src</b></font>$ python WebApiSentiment.py 
 </pre>
 
-<h3>Web App Interface:</h3>
+**Web App Interface:**
 ![img_3.png](img_3.png)
 
 Enter the search query to scrape the twitter and collect the data , 
