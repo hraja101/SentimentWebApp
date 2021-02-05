@@ -1,5 +1,6 @@
-from flask import Flask, render_template, jsonify, request, url_for, redirect, make_response
 import pandas as pd
+from flask import Flask, render_template, request, url_for, redirect
+
 import TwitterApiConfig as Config
 from TwitterSentimentAnalyser import TwitterSentiment, model_train
 

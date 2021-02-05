@@ -23,6 +23,10 @@ class TwitterSentiment:
         # TODO- to fetch user details
         api = API(auth)
 
+        if not api.verify_credentials():
+            raise Exception('Unable to verify credentials with remote server: check your twitter API keys:',
+                            self.config)
+
         # create an instance of the twitter stream listener
         tweet_listener = TwitterStreamListener()
 
@@ -52,9 +56,9 @@ def model_train(tweets_df):
     acc = accuracy_score(y_true=y_test, y_pred=y_pred_class)
 
     print("{score:<6}  in {train_time:>5} /  {test_time}".format(
-            score="score",
-            train_time="train",
-            test_time="test"))
+        score="score",
+        train_time="train",
+        test_time="test"))
 
     # print("-" * 70)
     #
