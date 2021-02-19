@@ -6,8 +6,10 @@ from random import randrange
 from nltk.corpus import stopwords
 from nltk.sentiment import SentimentIntensityAnalyzer
 import nltk
+from pymongo import MongoClient
 from textblob import TextBlob
 from tweepy.streaming import StreamListener
+import pymongo
 
 nltk.download('vader_lexicon')
 nltk.download('stopwords')
@@ -21,6 +23,7 @@ if not IS_PY3:
 # tweets and sentiment list
 tweets = []
 sentiment = []
+MONGO_HOST = 'mongodb://localhost/twitterDB'
 
 
 # Override the stream class
@@ -29,6 +32,7 @@ class TwitterStreamListener(StreamListener):
     def __init__(self):
         self.count = 0
         self.max_count = 500  # max 500 tweets
+        self.mongoClient = MongoClient(MONGO_HOST)
 
     def on_data(self, raw_data):
         try:
@@ -38,9 +42,11 @@ class TwitterStreamListener(StreamListener):
 
         else:
             try:
-
+                # Use or create a twitterDB
+                twitterDB = self.mongoClient.twitterDB
                 twitter_data_dict = json.loads(raw_data)
                 twitter_data_text = twitter_data_dict["text"]
+                twitterDB.tweetSentiment.insert(twitter_data_dict)
                 self.count += 1
 
                 if twitter_data_text is None:
